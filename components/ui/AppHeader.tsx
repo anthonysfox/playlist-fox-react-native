@@ -10,7 +10,11 @@ import {
   View,
 } from "react-native";
 
-export function AppHeader() {
+interface AppHeaderProps {
+  title?: string;
+}
+
+export function AppHeader({ title = "PlaylistFox" }: AppHeaderProps) {
   const { signOut } = useAuth();
   const { user } = useUser();
 
@@ -37,7 +41,7 @@ export function AppHeader() {
       <View style={styles.headerContent}>
         {/* Left side - Simple brand */}
         <View style={styles.brandSection}>
-          <Text style={styles.brandName}>PlaylistFox</Text>
+          <Text style={styles.brandName}>{title}</Text>
         </View>
 
         {/* Right side - Profile only */}

@@ -1,11 +1,12 @@
 import { AppHeader } from "@/components/ui/AppHeader";
-import { CuratedPlaylists } from "@/components/ui/CuratedPlaylists";
+import { CuratedPlaylists } from "@/components/ui";
 import { TrackPreviewModal } from "@/components/ui/TrackPreviewModal";
 import { LoadingOverlay } from "@/components/ui/LoadingOverlay";
 import { useApiService, SpotifyPlaylist, ApiError } from "@/services/api";
 import React, { useState } from "react";
 import { Alert, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useRouter } from "expo-router";
 
 interface ISpotifyPlaylist {
   id: string;
@@ -29,6 +30,7 @@ export default function HomeScreen() {
   const [loadingTracks, setLoadingTracks] = useState(false);
   
   const apiService = useApiService();
+  const router = useRouter();
 
   const generateMockTracks = (playlistName: string) => {
     const mockTracks = [
@@ -91,45 +93,12 @@ export default function HomeScreen() {
     return mockTracks.slice(0, Math.floor(Math.random() * 5) + 3); // 3-7 tracks
   };
 
-  const handleSubscribe = async (playlist: ISpotifyPlaylist) => {
-    Alert.alert(
-      "Subscribe to Playlist",
-      `Create a copy of "${playlist.name}" that stays updated with new tracks?`,
-      [
-        { text: "Cancel", style: "cancel" },
-        {
-          text: "Subscribe",
-          onPress: async () => {
-            try {
-              setLoadingTracks(true);
-              const result = await apiService.subscribeToPlaylist(
-                playlist.id, 
-                `${playlist.name} (Auto-Updated)`
-              );
-              
-              if (result.success) {
-                Alert.alert(
-                  "Success!", 
-                  `Created "${playlist.name} (Auto-Updated)" in your Spotify account! It will automatically update with new tracks weekly.`,
-                  [{ text: "Great!", style: "default" }]
-                );
-              } else {
-                throw new Error(result.message || 'Subscription failed');
-              }
-            } catch (error) {
-              console.error('Subscription error:', error);
-              Alert.alert(
-                "Subscription Failed", 
-                error instanceof Error ? error.message : 'Unable to subscribe to playlist. Please try again.',
-                [{ text: "OK", style: "default" }]
-              );
-            } finally {
-              setLoadingTracks(false);
-            }
-          },
-        },
-      ]
-    );
+  const handleViewSubscriptions = (sourcePlaylistId: string) => {
+    // Navigate to subscriptions tab and highlight the specific source playlist
+    router.push({
+      pathname: '/subscribed',
+      params: { highlightSourceId: sourcePlaylistId }
+    });
   };
 
   const handleViewTracks = async (playlist: SpotifyPlaylist) => {
@@ -171,21 +140,14 @@ export default function HomeScreen() {
     }
   };
 
-  // Mock subscribed playlist IDs
-  const subscribedPlaylistIds = new Set([
-    "playlist_example_1",
-    "playlist_example_2",
-  ]);
-
   return (
     <SafeAreaView style={styles.safeArea} edges={["top", "bottom"]}>
       <View style={styles.authenticatedContainer}>
-        <AppHeader />
+        <AppHeader title="Discover" />
 
         <CuratedPlaylists
-          onSubscribe={handleSubscribe}
           onViewTracks={handleViewTracks}
-          subscribedPlaylistIds={subscribedPlaylistIds}
+          onViewSubscriptions={handleViewSubscriptions}
         />
 
         <TrackPreviewModal

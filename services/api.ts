@@ -129,32 +129,67 @@ class ApiService {
     );
   }
 
-  // Subscribe to a playlist (simplified version for React Native)
+  // Subscribe to a playlist with full Next.js API compatibility
   async subscribeToPlaylist(
-    sourcePlaylistId: string,
-    getToken: () => Promise<string | null>,
-    newPlaylistName?: string
+    subscriptionData: {
+      sourcePlaylist: {
+        id: string;
+        name: string;
+        imageUrl: string;
+        trackCount: number;
+      };
+      managedPlaylist?: {
+        id: string;
+        name: string;
+        imageUrl: string;
+        trackCount: number;
+      };
+      newPlaylistName?: string;
+      syncFrequency?: string;
+      syncQuantityPerSource?: number;
+      runImmediateSync?: boolean;
+      syncMode?: string;
+      explicitContentFilter?: boolean;
+      trackAgeLimit?: number;
+      customDays?: string[];
+    },
+    getToken: () => Promise<string | null>
   ): Promise<{ success: boolean; message: string; data?: any }> {
     const headers = await this.getAuthHeaders(getToken);
     
-    // Create subscription with simplified payload
     const body = {
-      sourcePlaylist: {
-        id: sourcePlaylistId,
-        name: newPlaylistName || `Copy of ${sourcePlaylistId}`,
-        trackCount: 0, // Will be updated by the API
-      },
-      newPlaylistName: newPlaylistName,
-      syncFrequency: 'WEEKLY',
-      syncQuantityPerSource: 5,
-      runImmediateSync: true,
-      syncMode: 'APPEND',
+      ...subscriptionData,
+      syncFrequency: subscriptionData.syncFrequency || "WEEKLY",
+      syncQuantityPerSource: subscriptionData.syncQuantityPerSource || 5,
+      runImmediateSync: subscriptionData.runImmediateSync ?? true,
+      syncMode: subscriptionData.syncMode || "APPEND",
+      explicitContentFilter: subscriptionData.explicitContentFilter || false,
+      trackAgeLimit: subscriptionData.trackAgeLimit || 0,
     };
-
-    return this.makeRequest(`/spotify/playlists/subscribe`, {
+    
+    return this.makeRequest('/spotify/playlists/subscribe', {
       method: 'POST',
       headers,
       body: JSON.stringify(body),
+    });
+  }
+
+  // Get user's own playlists for subscription destination selection
+  async getUserPlaylists(
+    offset: number = 0, 
+    limit: number = 20,
+    getToken: () => Promise<string | null>,
+    ownedOnly: boolean = true
+  ): Promise<any[]> {
+    const headers = await this.getAuthHeaders(getToken);
+    const queryParams = new URLSearchParams({
+      offset: offset.toString(),
+      limit: limit.toString(),
+      ...(ownedOnly && { owned_only: 'true' })
+    });
+    
+    return this.makeRequest<any[]>(`/spotify/user/playlists?${queryParams}`, { 
+      headers 
     });
   }
 
@@ -217,11 +252,13 @@ export const useApiService = () => {
       apiService.getCuratedPlaylists(getToken, category, offset),
     getPlaylistTracks: (playlistId: string) => 
       apiService.getPlaylistTracks(playlistId, getToken),
-    subscribeToPlaylist: (playlistId: string, newPlaylistName?: string) => 
-      apiService.subscribeToPlaylist(playlistId, getToken, newPlaylistName),
+    subscribeToPlaylist: (subscriptionData: any) => 
+      apiService.subscribeToPlaylist(subscriptionData, getToken),
     unsubscribeFromPlaylist: (managedPlaylistId: string, sourcePlaylistId: string) => 
       apiService.unsubscribeFromPlaylist(managedPlaylistId, sourcePlaylistId, getToken),
     getUserSubscriptions: () => apiService.getUserSubscriptions(getToken),
+    getUserPlaylists: (offset?: number, limit?: number, ownedOnly?: boolean) => 
+      apiService.getUserPlaylists(offset, limit, getToken, ownedOnly),
     searchPlaylists: (searchText: string, offset?: number) => 
       apiService.searchPlaylists(searchText, getToken, offset),
   };

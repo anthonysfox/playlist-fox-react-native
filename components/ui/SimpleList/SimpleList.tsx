@@ -20,6 +20,7 @@ interface SimpleListProps {
   playlists: ISpotifyPlaylist[];
   onSubscribe?: (playlist: ISpotifyPlaylist) => void;
   onViewTracks?: (playlist: ISpotifyPlaylist) => void;
+  onViewSubscriptions?: (sourcePlaylistId: string) => void;
   subscribedPlaylistIds?: Set<string>;
   loadingPlaylistId?: string | null;
   onLoadMore?: () => void;
@@ -31,6 +32,7 @@ interface PlaylistItemProps {
   playlist: ISpotifyPlaylist;
   onSubscribe?: (playlist: ISpotifyPlaylist) => void;
   onViewTracks?: (playlist: ISpotifyPlaylist) => void;
+  onViewSubscriptions?: (sourcePlaylistId: string) => void;
   isSubscribed?: boolean;
   isLoading?: boolean;
 }
@@ -39,6 +41,7 @@ const PlaylistItem: React.FC<PlaylistItemProps> = ({
   playlist,
   onSubscribe,
   onViewTracks,
+  onViewSubscriptions,
   isSubscribed = false,
   isLoading = false,
 }) => {
@@ -88,14 +91,27 @@ const PlaylistItem: React.FC<PlaylistItemProps> = ({
           styles.subscribeButton,
           isSubscribed ? styles.subscribedButton : styles.unsubscribedButton
         ]}
-        onPress={() => onSubscribe?.(playlist)}
+        onPress={() => {
+          if (isSubscribed) {
+            onViewSubscriptions?.(playlist.id);
+          } else {
+            onSubscribe?.(playlist);
+          }
+        }}
         activeOpacity={0.7}
       >
-        <Ionicons
-          name={isSubscribed ? "notifications" : "notifications-outline"}
-          size={16}
-          color={isSubscribed ? "#CC5500" : "white"}
-        />
+        {isSubscribed ? (
+          <View style={styles.subscribedContent}>
+            <Ionicons name="checkmark" size={14} color="#CC5500" />
+            <Text style={styles.subscribedText}>Subscribed</Text>
+          </View>
+        ) : (
+          <Ionicons
+            name="notifications-outline"
+            size={16}
+            color="white"
+          />
+        )}
       </TouchableOpacity>
     </View>
   );
@@ -105,6 +121,7 @@ export const SimpleList: React.FC<SimpleListProps> = ({
   playlists,
   onSubscribe,
   onViewTracks,
+  onViewSubscriptions,
   subscribedPlaylistIds = new Set(),
   loadingPlaylistId = null,
   onLoadMore,
@@ -116,6 +133,7 @@ export const SimpleList: React.FC<SimpleListProps> = ({
       playlist={item}
       onSubscribe={onSubscribe}
       onViewTracks={onViewTracks}
+      onViewSubscriptions={onViewSubscriptions}
       isSubscribed={subscribedPlaylistIds.has(item.id)}
       isLoading={loadingPlaylistId === item.id}
     />
@@ -180,7 +198,7 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   listContent: {
-    paddingBottom: 16,
+    paddingBottom: 0,
   },
   itemContainer: {
     flexDirection: 'row',
@@ -239,10 +257,24 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   subscribedButton: {
-    backgroundColor: '#FED7AA',
+    backgroundColor: '#FEF3F2',
+    borderWidth: 1,
+    borderColor: '#FECACA',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
   },
   unsubscribedButton: {
     backgroundColor: '#CC5500',
+  },
+  subscribedContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  subscribedText: {
+    fontSize: 12,
+    color: '#CC5500',
+    fontWeight: '600',
   },
   separator: {
     height: 8,

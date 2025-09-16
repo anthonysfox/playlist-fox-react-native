@@ -13,7 +13,7 @@
     "ios": {
       "supportsTablet": true,
       "statusBarStyle": "dark",
-      "bundleIdentifier": "com.yourcompany.playlistfox",
+      "bundleIdentifier": "com.anthonyfox.playlistfox",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       }
@@ -28,7 +28,7 @@
         "barStyle": "dark-content",
         "backgroundColor": "#F7FAFC"
       },
-      "package": "com.yourcompany.playlistfox"
+      "package": "com.anthonyfox.playlistfox"
     },
     "web": {
       "bundler": "metro",

@@ -1,15 +1,7 @@
 import { useAuth } from '@clerk/clerk-expo';
 
 // Network configuration
-const getApiBaseUrl = () => {
-  if (__DEV__) {
-    // Development - your local machine IP
-    return 'http://192.168.1.178:3000/api';
-  }
-  return 'https://your-domain.com/api'; // Production URL
-};
-
-const API_BASE_URL = getApiBaseUrl();
+const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL;
 
 // Types
 export interface SpotifyPlaylist {

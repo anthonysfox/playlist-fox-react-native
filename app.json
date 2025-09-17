@@ -9,26 +9,12 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "description": "Discover and sync your favorite playlists automatically",
-    "privacy": "public",
     "ios": {
       "supportsTablet": true,
-      "statusBarStyle": "dark",
       "bundleIdentifier": "com.anthonyfox.playlistfox",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       }
-    },
-    "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/images/icon.png",
-        "backgroundColor": "#ffffff"
-      },
-      "edgeToEdgeEnabled": true,
-      "statusBar": {
-        "barStyle": "dark-content",
-        "backgroundColor": "#F7FAFC"
-      },
-      "package": "com.anthonyfox.playlistfox"
     },
     "web": {
       "bundler": "metro",

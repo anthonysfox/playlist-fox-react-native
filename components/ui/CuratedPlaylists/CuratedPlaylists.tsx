@@ -273,7 +273,7 @@ export const CuratedPlaylists: React.FC<CuratedPlaylistsProps> = ({
     if (!isSearchMode && loading) {
       loadPlaylists(activeCategory, activeSubOption);
     }
-  }, [activeCategory, activeSubOption, isSearchMode, loading, loadPlaylists]);
+  }, [activeCategory, activeSubOption, isSearchMode, loading]);
 
   // Event handlers
   const handleCategoryChange = (category: string) => {

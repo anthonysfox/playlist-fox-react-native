@@ -7,15 +7,24 @@
     "development": {
       "developmentClient": true,
       "distribution": "internal",
-      "env": ".env.development"
+      "env": {
+        "EXPO_PUBLIC_API_URL": "https://spotify-playlist-subscribe-v2-git-develop-anthonysfoxs-projects.vercel.app/api",
+        "EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY": "pk_test_ZXBpYy1tb3RoLTIzLmNsZXJrLmFjY291bnRzLmRldiQ"
+      }
     },
     "preview": {
       "distribution": "internal",
-      "env": ".env.development"
+      "env": {
+        "EXPO_PUBLIC_API_URL": "https://spotify-playlist-subscribe-v2-git-develop-anthonysfoxs-projects.vercel.app/api",
+        "EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY": "pk_test_ZXBpYy1tb3RoLTIzLmNsZXJrLmFjY291bnRzLmRldiQ"
+      }
     },
     "production": {
       "autoIncrement": true,
-      "env": ".env.production"
+      "env": {
+        "EXPO_PUBLIC_API_URL": "https://playlistfox.com/api",
+        "EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY": "pk_live_Y2xlcmsucGxheWxpc3Rmb3guY29tJA"
+      }
     }
   },
   "submit": {

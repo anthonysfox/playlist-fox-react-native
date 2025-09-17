@@ -18,7 +18,6 @@ export function AppWrapper() {
 
   // If not signed in, show login screen
   if (!isSignedIn) {
-    console.log("here");
     return <LoginScreen />;
   }
 
